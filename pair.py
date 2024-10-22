@@ -70,6 +70,9 @@ def pair_algorithm(num_iterations, threshold, attack_objective):
     attacker_model = "gpt-3.5-turbo"
     target_model = "gpt-3.5-turbo"
 
+    with open('output.txt', 'w', encoding='utf-8') as f:
+        f.write(attack_objective + "\n")
+
     for i in range(num_iterations):
         # Attacker LLM generates a prompt based on conversation history
         if len(conversation_history) == 0:
@@ -85,6 +88,9 @@ def pair_algorithm(num_iterations, threshold, attack_objective):
 
         # Judge the response
         success = judge_function(prompt_from_attacker, response_from_target, attack_objective)
+        
+        with open('output.txt', 'w', encoding='utf-8') as f:
+            f.write(f"Attacker Prompt:\n{prompt_from_attacker}\nResponse:\n{response_from_target}\nSuccess: {"Yes" if success else "No"}\n")
 
         # If success, return the successful prompt
         if success:
