@@ -4,6 +4,9 @@ import os
 # Set up API key (replace with your own)
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
+with open('system_prompt.txt', 'r') as f:
+    system_prompt = f.read()
+
 def call_gpt(prompt, model="gpt-3.5-turbo"):
     """
     Calls the GPT-3.5 API and returns the response.
@@ -11,7 +14,7 @@ def call_gpt(prompt, model="gpt-3.5-turbo"):
     response = openai.ChatCompletion.create(
         model=model,
         messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "system", "content": system_prompt},
             {"role": "user", "content": prompt},
         ],
         max_tokens=1000,
