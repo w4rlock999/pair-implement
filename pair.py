@@ -1,6 +1,8 @@
 import openai
+from openai import OpenAI
 import os
 
+client = OpenAI()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 with open('system_prompt.txt', 'r', encoding='utf-8') as f:
@@ -13,7 +15,7 @@ def call_gpt(prompt, model="gpt-3.5-turbo"):
     """
     Calls the GPT-3.5 API and returns the response.
     """
-    response = openai.completions.create(
+    response = client.chat.completions.create(
         model=model,
         messages=[
             {"role": "system", "content": system_prompt},
@@ -33,7 +35,7 @@ def call_judge_gpt3(prompt, response, objective):
     ]
     
     # Call GPT-3.5 API to evaluate the response
-    result = openai.completions.create(
+    result = client.chat.completions.create(
         model="gpt-3.5-turbo",
         messages=messages,
         max_tokens=100
