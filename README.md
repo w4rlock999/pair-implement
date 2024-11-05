@@ -18,19 +18,16 @@ Follow the instructions below to test the algorithm on your own.
 ## Installation Instructions
 
 1. Clone the Repository
-Clone this repository to your local machine by running:
   ```bash
   git clone https://github.com/jeffmeredith/pair-implement.git
   ```
 
 2. Navigate to the Project Directory
-Move into the newly created project folder:
   ```bash
   cd pair-implement
   ```
 
 3. Create a Virtual Environment
-To create a virtual environment housed in a folder named ```venv```, run:
   ```bash
   python -m venv venv
   ```
@@ -40,7 +37,6 @@ Next, activate this environment by running:
   ```
 
 4. Install Dependencies
-Once the virtual environment is activated, install the required packages by running:
   ```bash
   pip install -r requirements.txt
   ```
@@ -66,10 +62,10 @@ To allow the script to use your API key, set it as an environment variable.
 
 ## Running the PAIR Algorithm Demo
 
-7. Customize the Attack Objective
+7. Customize the Attack Objective <br>
 Open the ```pair.py``` file in a text editor and locate the line that sets the ```attack_objective``` variable. Modify the string in ```attack_objective``` to match your desired objective.
 
-8. Run the Script
+8. Run the Script <br>
 Run the ```pair.py``` script:
   ```bash
   python pair.py
