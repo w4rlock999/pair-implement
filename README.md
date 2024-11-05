@@ -74,3 +74,9 @@ Run the ```pair.py``` script:
   ```bash
   python pair.py
   ```
+
+---
+
+## View Outputs and Chat History
+
+After running the PAIR demo, you can view the resulting jailbreak prompt and chat history between the LLMs in the ```output.txt``` file within the main project directory.
