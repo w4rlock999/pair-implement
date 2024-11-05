@@ -62,10 +62,10 @@ To allow the script to use your API key, set it as an environment variable.
 
 ## Running the PAIR Algorithm Demo
 
-7. Customize the Attack Objective <br>
+7. Customize the Attack Objective <br><br>
 Open the ```pair.py``` file in a text editor and locate the line that sets the ```attack_objective``` variable. Modify the string in ```attack_objective``` to match your desired objective.
 
-8. Run the Script <br>
+8. Run the Script <br><br>
 Run the ```pair.py``` script:
   ```bash
   python pair.py
