@@ -12,3 +12,65 @@ Follow the instructions below to test the algorithm on your own.
 
   ```bash
   python --version
+
+---
+
+## Installation Instructions
+
+1. Clone the Repository
+Clone this repository to your local machine by running:
+  ```bash
+  git clone https://github.com/jeffmeredith/pair-implement.git
+  ```
+
+2. Navigate to the Project Directory
+Move into the newly created project folder:
+  ```bash
+  cd pair-implement
+  ```
+
+3. Create a Virtual Environment
+To create a virtual environment housed in a folder named ```venv```, run:
+  ```bash
+  python -m venv venv
+  ```
+Next, activate this environment by running:
+  ```bash
+  .\venv\Scripts\activate
+  ```
+
+4. Install Dependencies
+Once the virtual environment is activated, install the required packages by running:
+  ```bash
+  pip install -r requirements.txt
+  ```
+
+---
+
+## Set Up OpenAI API Key
+
+5. Obtain an API Key
+    1. Go to the [OpenAI API Key page](https://platform.openai.com/api-keys).
+    2. Generate a new API key or use an existing one to copy to your clipboard.
+
+6. Set the API Key as an Environment Variable
+To allow the script to use your API key, set it as an environment variable.
+- Search for "Environment Variables" in the Start menu
+- Click "Edit the system environment variables"
+- In the System Properties window, click "Environment Variables"
+- Under "User variables," click "New" and set:
+    - Variable name: ```OPENAI_API_KEY```
+    - Variable value: Paste your copied API key
+
+---
+
+## Running the PAIR Algorithm Demo
+
+7. Customize the Attack Objective
+Open the ```pair.py``` file in a text editor and locate the line that sets the ```attack_objective``` variable. Modify the string in ```attack_objective``` to match your desired objective.
+
+8. Run the Script
+Run the ```pair.py``` script:
+  ```bash
+  python pair.py
+  ```
