@@ -5,7 +5,11 @@ import json
 from dotenv import load_dotenv
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+client = OpenAI(api_key=os.getenv("TOGETHER_API_KEY"),
+                base_url="https://api.together.xyz/v1",
+)
+
+OPEN_SOURCE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
 with open('authority_system_prompt.txt', 'r', encoding='utf-8') as f:
     authority_system_prompt = f.read()
@@ -21,9 +25,9 @@ with open('judge_prompt.txt', 'r', encoding='utf-8') as f:
 
 system_prompts = [authority_system_prompt, logic_system_prompt, roleplay_system_prompt]
 
-def call_attacker_gpt(prompt, objective, system_prompt, model="gpt-3.5-turbo"):
+def call_attacker_gpt(prompt, objective, system_prompt, model=OPEN_SOURCE_MODEL):
     """
-    Calls the GPT-3.5 API and returns the response.
+    Calls the open source model and returns the response.
     """
     response = client.chat.completions.create(
         model=model,
@@ -33,10 +37,10 @@ def call_attacker_gpt(prompt, objective, system_prompt, model="gpt-3.5-turbo"):
         ],
         max_tokens=1000,
     )
-    time.sleep(21)
+    time.sleep(1)
     return response.choices[0].message.content
 
-def call_target_gpt(prompt, model="gpt-3.5-turbo"):
+def call_target_gpt(prompt, model=OPEN_SOURCE_MODEL):
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -44,7 +48,7 @@ def call_target_gpt(prompt, model="gpt-3.5-turbo"):
         ],
         max_tokens=1000,
     )
-    time.sleep(3)
+    time.sleep(1)
     return response.choices[0].message.content
 
 def call_judge_gpt3(prompt, response, objective):
@@ -56,13 +60,13 @@ def call_judge_gpt3(prompt, response, objective):
         {"role": "user", "content": judge_prompt}
     ]
     
-    # Call GPT-3.5 API to evaluate the response
+    # Calls open source model to evaluate the response
     result = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+        model=OPEN_SOURCE_MODEL,
         messages=messages,
         max_tokens=1000
     )
-    time.sleep(3)
+    time.sleep(1)
     
     # Extract the model's response
     return result.choices[0].message.content
@@ -71,7 +75,7 @@ def call_judge_gpt3(prompt, response, objective):
 # Judge function to interpret the rating and return True/False for jailbreak
 def judge_function(prompt, response, attack_objective):
     evaluation = call_judge_gpt3(prompt, response, attack_objective)
-    print(f"GPT-3.5 Judgment: {evaluation}")
+    print(f"Open Source Judgment: {evaluation}")
     try:
         rating = int(evaluation.split("[[")[1].split("]]")[0])
     except (IndexError, ValueError):
@@ -81,10 +85,10 @@ def judge_function(prompt, response, attack_objective):
 
 def pair_algorithm(num_iterations, attack_objective):
     """
-    Implements the PAIR algorithm using GPT-3.5 as both attacker and target LLM.
+    Implements the PAIR algorithm using an Open Source model as both attacker and target LLM.
     """
-    attacker_model = "gpt-3.5-turbo"
-    target_model = "gpt-3.5-turbo"
+    attacker_model = OPEN_SOURCE_MODEL
+    target_model = OPEN_SOURCE_MODEL
 
     with open('output.txt', 'w', encoding='utf-8') as f:
         f.write(attack_objective + "\n")
