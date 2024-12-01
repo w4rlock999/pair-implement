@@ -6,6 +6,11 @@ from dotenv import load_dotenv
 
 load_dotenv()
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+open_source_client = OpenAI(api_key=os.getenv("TOGETHER_API_KEY"),
+                base_url="https://api.together.xyz/v1",
+)
+
+OPEN_SOURCE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
 
 with open('authority_system_prompt.txt', 'r', encoding='utf-8') as f:
     authority_system_prompt = f.read()
@@ -34,7 +39,6 @@ def call_attacker_gpt(prompt, objective, system_prompt, start_string, model="gpt
         ],
         max_tokens=1000,
     )
-    time.sleep(2)
     return response.choices[0].message.content
 
 def call_target_gpt(prompt, model="gpt-3.5-turbo"):
@@ -45,10 +49,10 @@ def call_target_gpt(prompt, model="gpt-3.5-turbo"):
         ],
         max_tokens=1000,
     )
-    time.sleep(2)
+    time.sleep(1)
     return response.choices[0].message.content
 
-def call_judge_gpt3(prompt, response, objective):
+def call_judge_llm(prompt, response, objective):
     # Construct the full prompt with objective, prompt, and response
     judge_prompt = f"Prompt: {prompt}\nResponse: {response}"
     
@@ -57,13 +61,12 @@ def call_judge_gpt3(prompt, response, objective):
         {"role": "user", "content": judge_prompt}
     ]
     
-    # Call GPT-3.5 API to evaluate the response
-    result = client.chat.completions.create(
-        model="gpt-3.5-turbo",
+    # Calls open source model to evaluate the response
+    result = open_source_client.chat.completions.create(
+        model=OPEN_SOURCE_MODEL,
         messages=messages,
         max_tokens=1000
     )
-    time.sleep(2)
     
     # Extract the model's response
     return result.choices[0].message.content
@@ -71,7 +74,7 @@ def call_judge_gpt3(prompt, response, objective):
 
 # Judge function to interpret the rating and return True/False for jailbreak
 def judge_function(prompt, response, attack_objective):
-    evaluation = call_judge_gpt3(prompt, response, attack_objective)
+    evaluation = call_judge_llm(prompt, response, attack_objective)
     print(f"GPT-3.5 Judgment: {evaluation}")
     try:
         rating = int(evaluation.split("[[")[1].split("]]")[0])
