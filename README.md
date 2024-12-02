@@ -43,7 +43,7 @@ Next, activate this environment by running:
 
 ---
 
-## Set Up OpenAI API Key
+## Set Up OpenAI API Key (For GPT-3.5 Attacker Model)
 
 5. Obtain an API Key
     1. Go to the [OpenAI API Key page](https://platform.openai.com/api-keys).
@@ -60,15 +60,34 @@ To allow the script to use your API key, set it as an environment variable.
 
 ---
 
+## Set Up Together.AI API Key (For Open Source Attacker Model)
+
+5. Obtain an API Key
+    1. Go to the [together.ai API Page](https://api.together.xyz/).
+    2. Create an account to get a free API key with $1 credit or use an existing key.
+
+6. Set the API Key as an Environment Variable
+To allow the script to use your API key, set it as an environment variable.
+- Search for "Environment Variables" in the Start menu
+- Click "Edit the system environment variables"
+- In the System Properties window, click "Environment Variables"
+- Under "User variables," click "New" and set:
+    - Variable name: ```TOGETHER_API_KEY```
+    - Variable value: Paste your copied API key
+
+---
+
 ## Running the PAIR Algorithm Demo
 
-7. Customize the Attack Objective <br><br>
-Open the ```pair.py``` file in a text editor and locate the line that sets the ```attack_objective``` variable. Modify the string in ```attack_objective``` to match your desired objective.
-
-8. Run the Script <br><br>
-Run the ```pair.py``` script:
+7. Run the Script <br><br>
+To run the GPT-3.5 implementation of PAIR algorithm on the benchmark, type the following into command line:
   ```bash
-  python pair.py
+  python test_pair_gpt.py
+  ```
+
+To run the Mixtral-8x7B implementation of PAIR on the benchmark, type:
+  ```bash
+  python test_pair_open_source.py
   ```
 
 ---
