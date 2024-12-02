@@ -94,4 +94,4 @@ To run the Mixtral-8x7B implementation of PAIR on the benchmark, type:
 
 ## View Outputs and Chat History
 
-After running the PAIR demo, you can view the resulting jailbreak prompt and chat history between the LLMs in the ```output.txt``` file within the main project directory.
+After running the PAIR demo, you can view the resulting jailbreak prompt and chat history between the LLMs in the json files inside the ```results``` folder.
