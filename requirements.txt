@@ -31,7 +31,8 @@ Pygments==2.18.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
-pywin32==308
+# pywin32
+# pywin32==308
 PyYAML==6.0.2
 pyzmq==26.2.0
 requests==2.32.3
@@ -45,3 +46,4 @@ typing_extensions==4.12.2
 tzdata==2024.2
 urllib3==2.2.3
 wcwidth==0.2.13
+groq==0.11.0

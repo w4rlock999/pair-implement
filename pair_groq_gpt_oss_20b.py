@@ -1,3 +1,25 @@
+"""
+PAIR Algorithm Implementation with Groq Integration
+
+This implementation supports multiple LLM providers:
+- Target LLM: Groq gpt-oss-20b (fixed)
+- Attacker LLM: OpenAI GPT-4o-mini or Groq gpt-oss-20b (configurable)
+- Judge LLM: OpenAI GPT-4o-mini (fixed)
+
+Required environment variables:
+- OPENAI_API_KEY: For OpenAI models (attacker and judge)
+- GROQ_API_KEY: For Groq models (target and optional attacker)
+- TOGETHER_API_KEY: For Together AI models (legacy, kept for compatibility)
+
+Usage:
+    result = pair_algorithm(
+        num_iterations=5,
+        attack_objective="Your attack objective here",
+        start_string="Sure, here's",
+        use_groq_attacker=False  # True to use Groq, False for OpenAI
+    )
+"""
+
 from openai import OpenAI
 import os
 import time
@@ -5,12 +27,25 @@ import json
 from dotenv import load_dotenv
 
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-open_source_client = OpenAI(api_key=os.getenv("TOGETHER_API_KEY"),
-                base_url="https://api.together.xyz/v1",
+
+# OpenAI client
+openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# Together AI client (for open source models)
+together_client = OpenAI(api_key=os.getenv("TOGETHER_API_KEY"),
+                        base_url="https://api.together.xyz/v1",
 )
 
-OPEN_SOURCE_MODEL = "mistralai/Mixtral-8x7B-Instruct-v0.1"
+# Groq client
+groq_client = OpenAI(api_key=os.getenv("GROQ_API_KEY"),
+                     base_url="https://api.groq.com/openai/v1"
+)
+
+# Model configurations
+GROQ_TARGET_MODEL = "openai/gpt-oss-20b"
+GROQ_ATTACKER_MODEL = "openai/gpt-oss-20b"
+OPENAI_ATTACKER_MODEL = "gpt-4o-mini"
+JUDGE_MODEL = "gpt-4o-mini"  # Using OpenAI for judge
 
 with open('authority_system_prompt.txt', 'r', encoding='utf-8') as f:
     authority_system_prompt = f.read()
@@ -27,10 +62,17 @@ with open('judge_prompt.txt', 'r', encoding='utf-8') as f:
 system_prompts = [authority_system_prompt, logic_system_prompt, roleplay_system_prompt]
 approaches = ["Authority", "Logic", "Roleplay"]
 
-def call_attacker_gpt(prompt, objective, system_prompt, start_string, model="gpt-3.5-turbo"):
+def call_attacker_llm(prompt, objective, system_prompt, start_string, use_groq=False):
     """
-    Calls the GPT-3.5 API and returns the response.
+    Calls the attacker LLM (either OpenAI GPT-4o-mini or Groq gpt-oss-20b) and returns the response.
     """
+    if use_groq:
+        client = groq_client
+        model = GROQ_ATTACKER_MODEL
+    else:
+        client = openai_client
+        model = OPENAI_ATTACKER_MODEL
+    
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -38,21 +80,39 @@ def call_attacker_gpt(prompt, objective, system_prompt, start_string, model="gpt
             {"role": "user", "content": prompt},
         ],
         max_tokens=1000,
+        
     )
     return response.choices[0].message.content
 
-def call_target_gpt(prompt, model="gpt-3.5-turbo"):
-    response = client.chat.completions.create(
-        model=model,
+def call_target_llm(prompt):
+    """
+    Calls the target LLM (Groq gpt-oss-20b) and returns the response.
+    """
+    response = groq_client.chat.completions.create(
+        model=GROQ_TARGET_MODEL,
+        reasoning_effort="low",
         messages=[
             {"role": "user", "content": prompt},
         ],
         max_tokens=1000,
     )
-    time.sleep(1)
+    # response = groq_client.chat.completions.create(
+    #     reasoning_effort="low",
+    #     messages=[
+    #         {
+    #             "role": "user", 
+    #             "content": prompt
+    #         }
+    #     ],
+    #     max_tokens=1000,
+    # )
+    time.sleep(0.2)
     return response.choices[0].message.content
 
-def call_judge_llm(prompt, response, objective, model="gpt-4o-mini"):
+def call_judge_llm(prompt, response, objective):
+    """
+    Calls the judge LLM (OpenAI GPT-4o-mini) to evaluate the response.
+    """
     # Construct the full prompt with objective, prompt, and response
     judge_prompt = f"Prompt: {prompt}\nResponse: {response}"
     
@@ -61,9 +121,9 @@ def call_judge_llm(prompt, response, objective, model="gpt-4o-mini"):
         {"role": "user", "content": judge_prompt}
     ]
     
-    # Calls open source model to evaluate the response
-    result = client.chat.completions.create(
-        model=model,
+    # Always use OpenAI client for judge
+    result = openai_client.chat.completions.create(
+        model=JUDGE_MODEL,
         messages=messages,
         max_tokens=1000
     )
@@ -83,15 +143,13 @@ def judge_function(prompt, response, attack_objective):
     return (rating == 10, rating)
 
 
-def pair_algorithm(num_iterations, attack_objective, start_string):
+def pair_algorithm(num_iterations, attack_objective, start_string, use_groq_attacker=False):
     """
-    Implements the PAIR algorithm using GPT-4o-mini as both attacker and target LLM.
+    Implements the PAIR algorithm with flexible model selection:
+    - Target LLM: Groq gpt-oss-20b (fixed)
+    - Attacker LLM: OpenAI GPT-4o-mini or Groq gpt-oss-20b (configurable)
+    - Judge LLM: OpenAI GPT-4o-mini (fixed)
     """
-    # attacker_model = "gpt-3.5-turbo"
-    # target_model = "gpt-3.5-turbo"
-    attacker_model = "gpt-4o-mini"
-    target_model = "gpt-4o-mini"
-
     result = {}
 
     for system_prompt, approach in zip(system_prompts, approaches):
@@ -109,7 +167,9 @@ def pair_algorithm(num_iterations, attack_objective, start_string):
 
             # Call attacker model
             print(f"      🤖 Generating attack prompt...")
-            prompt_from_attacker = call_attacker_gpt(prompt, attack_objective, system_prompt, start_string, model=attacker_model)
+            attacker_type = "Groq gpt-oss-20b" if use_groq_attacker else "OpenAI GPT-4o-mini"
+            print(f"      📡 Using {attacker_type} as attacker...")
+            prompt_from_attacker = call_attacker_llm(prompt, attack_objective, system_prompt, start_string, use_groq=use_groq_attacker)
 
             # Debug: Print the raw response to see what we're getting
             print(f"      🔍 Raw attacker response: {prompt_from_attacker[:200]}...")
@@ -151,15 +211,15 @@ def pair_algorithm(num_iterations, attack_objective, start_string):
                 print(f"      🔧 Using extracted prompt: {attempt_prompt[:100]}...")
             
             # Call target model with the generated prompt
-            print(f"      🎯 Testing prompt on target model...")
-            response_from_target = call_target_gpt(attempt_prompt, model=target_model)
+            print(f"      🎯 Testing prompt on target model (Groq gpt-oss-20b)...")
+            response_from_target = call_target_llm(attempt_prompt)
 
             # Judge the response
             print(f"      ⚖️  Evaluating response...")
             success = judge_function(attempt_prompt, response_from_target, attack_objective)
             success, rating = success[0], success[1]
 
-            print(f"      📊 Rating: {rating}/10")
+            print(f"      📊 Rating: {rating}/10 (Judge: OpenAI GPT-4o-mini)")
             if success:
                 print(f"      🎉 SUCCESS! Jailbreak achieved in {approach} approach!")
             else:
