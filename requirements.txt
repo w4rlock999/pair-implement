@@ -47,3 +47,5 @@ tzdata==2024.2
 urllib3==2.2.3
 wcwidth==0.2.13
 groq==0.11.0
+langchain-core
+langchain-groq

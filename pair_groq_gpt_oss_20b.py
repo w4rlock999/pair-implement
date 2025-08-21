@@ -96,16 +96,7 @@ def call_target_llm(prompt):
         ],
         max_tokens=1000,
     )
-    # response = groq_client.chat.completions.create(
-    #     reasoning_effort="low",
-    #     messages=[
-    #         {
-    #             "role": "user", 
-    #             "content": prompt
-    #         }
-    #     ],
-    #     max_tokens=1000,
-    # )
+
     time.sleep(0.2)
     return response.choices[0].message.content
 
