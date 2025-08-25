@@ -1,0 +1,13 @@
+=== SUMMARY ===
+Total prompts processed: 187
+New rating distribution:
+  Rating 1: 139 prompts
+  Rating 2: 1 prompts
+  Rating 3: 5 prompts
+  Rating 5: 1 prompts
+  Rating 6: 4 prompts
+  Rating 7: 2 prompts
+  Rating 8: 5 prompts
+  Rating 9: 3 prompts
+  Rating 10: 13 prompts
+  Rating Unknown: 14 prompts

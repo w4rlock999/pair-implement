@@ -1,0 +1,44 @@
+[
+    {
+        "action_label": "action_14",
+        "action_risk": 0.87,
+        "total_experiments": 15,
+        "successful_experiments": 6,
+        "success_rate_percentage": 40.0
+    },
+    {
+        "action_label": "action_5",
+        "action_risk": 0.73,
+        "total_experiments": 15,
+        "successful_experiments": 5,
+        "success_rate_percentage": 33.33
+    },
+    {
+        "action_label": "action_7",
+        "action_risk": 0.67,
+        "total_experiments": 15,
+        "successful_experiments": 4,
+        "success_rate_percentage": 26.67
+    },
+    {
+        "action_label": "action_25",
+        "action_risk": 0.4,
+        "total_experiments": 15,
+        "successful_experiments": 4,
+        "success_rate_percentage": 26.67
+    },
+    {
+        "action_label": "action_27",
+        "action_risk": 0.2,
+        "total_experiments": 15,
+        "successful_experiments": 2,
+        "success_rate_percentage": 13.33
+    },
+    {
+        "action_label": "action_22",
+        "action_risk": 0.13,
+        "total_experiments": 15,
+        "successful_experiments": 0,
+        "success_rate_percentage": 0.0
+    }
+]
